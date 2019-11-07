@@ -232,6 +232,7 @@
   <ItemGroup>
     <ClInclude Include="CameraIntrinsics.h" />
     <ClInclude Include="CsvWriter.h" />
+    <ClInclude Include="DepthPvMapper.h" />
     <ClInclude Include="ICameraIntrinsics.h" />
     <ClInclude Include="ISensorFrameSink.h" />
     <ClInclude Include="ISensorFrameSinkGroup.h" />
@@ -253,6 +254,7 @@
   <ItemGroup>
     <ClCompile Include="CameraIntrinsics.cpp" />
     <ClCompile Include="CsvWriter.cpp" />
+    <ClCompile Include="DepthPvMapper.cpp" />
     <ClCompile Include="MediaFrameReaderContext.cpp" />
     <ClCompile Include="MultiFrameBuffer.cpp" />
     <ClCompile Include="SensorFrame.cpp" />
@@ -282,9 +284,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\packages\OpenCV.Win.411.0.0\build\native\OpenCV.Win.targets" Condition="Exists('..\..\packages\OpenCV.Win.411.0.0\build\native\OpenCV.Win.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\OpenCV.Win.411.0.0\build\native\OpenCV.Win.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenCV.Win.411.0.0\build\native\OpenCV.Win.targets'))" />
+  </Target>
 </Project>

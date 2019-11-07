@@ -50,6 +50,7 @@
     </ClCompile>
     <ClCompile Include="CameraIntrinsics.cpp" />
     <ClCompile Include="MultiFrameBuffer.cpp" />
+    <ClCompile Include="DepthPvMapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -91,8 +92,10 @@
     <ClInclude Include="CameraIntrinsics.h" />
     <ClInclude Include="ICameraIntrinsics.h" />
     <ClInclude Include="MultiFrameBuffer.h" />
+    <ClInclude Include="DepthPvMapper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
