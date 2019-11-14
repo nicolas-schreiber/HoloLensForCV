@@ -494,20 +494,32 @@ namespace HoloLensForCV
         //
         switch (kind)
         {
+
         case Windows::Media::Capture::Frames::MediaFrameSourceKind::Color:
+
+			// Force set the media stream to the desired format
+			// Ensure we select the desired video stream, check width and height
+			// MediaFrameSourceInfo->Source->Profile  Width : 896, Height : 504, FrameRate : 29.970030
+			if (format->VideoFormat->Width == 896 && format->VideoFormat->Height == 504)
+				//if (true)
+			{
 #if DBG_ENABLE_INFORMATIONAL_LOGGING
-            dbg::trace(
-                L"MediaFrameSourceGroup::GetSubtypeForFrameReader: evaluating MediaFrameSourceKind::Color with format %s-%s @%i/%iHz",
-                format->MajorType->Data(),
-                format->Subtype->Data(),
-                format->FrameRate->Numerator,
-                format->FrameRate->Denominator);
+				dbg::trace(
+					L"MediaFrameSourceGroup::GetSubtypeForFrameReader: evaluating MediaFrameSourceKind::Color with format %s-%s @%i/%iHz and resolution %i x %i",
+					format->MajorType->Data(),
+					format->Subtype->Data(),
+					format->FrameRate->Numerator,
+					format->FrameRate->Denominator,
+					format->VideoFormat->Width,
+					format->VideoFormat->Height);
 #endif /* DBG_ENABLE_INFORMATIONAL_LOGGING */
 
-            //
-            // For color sources, we accept anything and request that it be converted to Bgra8.
-            //
-            return Windows::Media::MediaProperties::MediaEncodingSubtypes::Bgra8;
+				//
+				// For color sources, we accept anything and request that it be converted to Bgra8.
+				//
+				return Windows::Media::MediaProperties::MediaEncodingSubtypes::Bgra8;
+			}
+
 
 #if ENABLE_HOLOLENS_RESEARCH_MODE_SENSORS
         case Windows::Media::Capture::Frames::MediaFrameSourceKind::Depth:

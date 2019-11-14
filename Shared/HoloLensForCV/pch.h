@@ -77,3 +77,8 @@
 
 // Include the depth pv mapper class
 #include "DepthPvMapper.h"
+
+// Include the classes for Yolo streaming
+#include "DeviceReceiver.h"
+#include "DesktopStreamer.h"
+#include "DesktopStreamerHeader.h"
