@@ -25,6 +25,9 @@
     <Filter Include="Depth PV Mapper">
       <UniqueIdentifier>{d9960610-9f72-4e74-89ab-53cacaa89523}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ArUco Marker Detection">
+      <UniqueIdentifier>{a84977bb-73eb-49b3-b4c2-49848f170713}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -70,6 +73,12 @@
     </ClCompile>
     <ClCompile Include="DepthPvMapper.cpp">
       <Filter>Depth PV Mapper</Filter>
+    </ClCompile>
+    <ClCompile Include="ArUcoMarkerTracker.cpp">
+      <Filter>ArUco Marker Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectedArUcoMarker.cpp">
+      <Filter>ArUco Marker Detection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +132,12 @@
     </ClInclude>
     <ClInclude Include="DepthPvMapper.h">
       <Filter>Depth PV Mapper</Filter>
+    </ClInclude>
+    <ClInclude Include="ArUcoMarkerTracker.h">
+      <Filter>ArUco Marker Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectedArUcoMarker.h">
+      <Filter>ArUco Marker Detection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

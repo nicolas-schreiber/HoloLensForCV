@@ -137,6 +137,10 @@ namespace HoloLensForCV
 
         if (nullptr != frameCoordinateSystem)
         {
+			// Cache the frame coordinate system to sensor frame class
+			// https://github.com/chrisfromwork/HoloLensForCV/commit/269d64c4e6bd500cac5c12bd199ea7fde7dc4602
+			sensorFrame->FrameCoordinateSystem = frameCoordinateSystem;
+
             Platform::IBox<Windows::Foundation::Numerics::float4x4>^ frameToOriginReference =
                 frameCoordinateSystem->TryGetTransformTo(
                     _spatialPerception->GetOriginFrameOfReference()->CoordinateSystem);
