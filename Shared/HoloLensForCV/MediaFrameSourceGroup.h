@@ -10,6 +10,8 @@
 //*********************************************************
 
 #pragma once
+#include "DetectedArUcoMarker.h"
+#include "ArUcoMarkerTracker.h"
 
 namespace HoloLensForCV
 {
@@ -31,7 +33,10 @@ namespace HoloLensForCV
 
         Windows::Foundation::IAsyncAction^ StartAsync();
 
-		    Windows::Foundation::IAsyncAction^ StopAsync();
+        Windows::Foundation::IAsyncAction^ StartArUcoMarkerTrackerAsync(float markerSize, int dictId, Windows::Perception::Spatial::SpatialCoordinateSystem^ unitySpatialCoodinateSystem);
+        Windows::Foundation::Collections::IVector<DetectedArUcoMarker^>^ DetectArUcoMarkers(SensorType type);
+
+		Windows::Foundation::IAsyncAction^ StopAsync();
 
         SensorFrame^ GetLatestSensorFrame(
             SensorType sensorType);
@@ -76,6 +81,8 @@ namespace HoloLensForCV
             Windows::Media::Capture::Frames::MediaFrameSourceGroup^ group);
 
     private:
+        ArUcoMarkerTracker^ _arUcoMarkerTracker;
+
         MediaFrameSourceGroupType _mediaFrameSourceGroupType;
         SpatialPerception^ _spatialPerception;
 

@@ -21,9 +21,6 @@ namespace HoloLensForCV
 		float _markerSize;
 		int _dictId;
 
-		// Vector of markers which can be passed across the WinRT interface
-		Windows::Foundation::Collections::IVector<DetectedArUcoMarker^>^ _detectedArUcoMarkers;
-
 		// Spatial coordinate system from unity
 		Windows::Perception::Spatial::SpatialCoordinateSystem^ _unitySpatialCoordinateSystem;
 

@@ -85,6 +85,39 @@ namespace HoloLensForCV
             });
     }
 
+    ///
+    /// Control the ArUco marker tracker class. Instantiate class object with 
+    /// initial parameters.
+    /// 
+    Windows::Foundation::IAsyncAction^ MediaFrameSourceGroup::StartArUcoMarkerTrackerAsync(
+        float markerSize, 
+        int dictId, 
+        Windows::Perception::Spatial::SpatialCoordinateSystem^ unitySpatialCoodinateSystem)
+    {
+        // Instantiate aruco marker tracker class with parameters.
+        return concurrency::create_async(
+            [this, markerSize, dictId, unitySpatialCoodinateSystem]()
+            {
+                _arUcoMarkerTracker = ref new ArUcoMarkerTracker(markerSize, dictId, unitySpatialCoodinateSystem);
+            });
+    }
+
+    ///
+    /// Get the current sensor frame and process using aruco libary. Return a vector of 
+    /// detected markers across the application boundary to the C# environment.
+    ///
+    Windows::Foundation::Collections::IVector<DetectedArUcoMarker^>^ 
+        MediaFrameSourceGroup::DetectArUcoMarkers(SensorType type)
+    {
+        // Get the current sensor frame from media frame source group
+        SensorFrame^ frame = GetLatestSensorFrame(type);
+
+        // Process the sensor frame using aruco marker tracker class
+        auto detections = _arUcoMarkerTracker->DetectArUcoMarkersInFrame(frame);
+
+        return detections;
+    }
+
 	Windows::Foundation::IAsyncAction^ MediaFrameSourceGroup::StopAsync()
 	{
 		return concurrency::create_async(

@@ -13,10 +13,6 @@ namespace HoloLensForCV
 		_markerSize = markerSize;
 		_dictId = dictId;
 		_unitySpatialCoordinateSystem = unitySpatialCoodinateSystem;
-
-		// New instance of detected aruco markers vector
-		// to contain the detected marker information
-		_detectedArUcoMarkers = ref new Platform::Collections::Vector<DetectedArUcoMarker^>();
 	}
 
 
@@ -26,7 +22,8 @@ namespace HoloLensForCV
 	{
 		// Clear the prior interface vector containing
 		// detected aruco markers
-		_detectedArUcoMarkers->Clear();
+		Windows::Foundation::Collections::IVector<DetectedArUcoMarker^>^ detectedMarkers
+			= ref new Platform::Collections::Vector<DetectedArUcoMarker^>();
 
 		// https://docs.opencv.org/4.1.1/d5/dae/tutorial_aruco_detection.html
 		cv::Mat wrappedMat;
@@ -139,10 +136,10 @@ namespace HoloLensForCV
 					viewToUnity);
 
 				// Add the marker to interface vector of markers
-				_detectedArUcoMarkers->Append(marker);
+				detectedMarkers->Append(marker);
 			}
 		}
 
-		return _detectedArUcoMarkers;
+		return detectedMarkers;
 	}
 }
