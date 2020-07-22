@@ -80,9 +80,9 @@ namespace HoloLensForCV
     {
         return concurrency::create_async(
             [this]()
-            {
-                return InitializeMediaSourceWorkerAsync();
-            });
+        {
+            return InitializeMediaSourceWorkerAsync();
+        });
     }
 
     ///
@@ -90,23 +90,23 @@ namespace HoloLensForCV
     /// initial parameters.
     /// 
     Windows::Foundation::IAsyncAction^ MediaFrameSourceGroup::StartArUcoMarkerTrackerAsync(
-        float markerSize, 
-        int dictId, 
+        float markerSize,
+        int dictId,
         Windows::Perception::Spatial::SpatialCoordinateSystem^ unitySpatialCoodinateSystem)
     {
         // Instantiate aruco marker tracker class with parameters.
         return concurrency::create_async(
             [this, markerSize, dictId, unitySpatialCoodinateSystem]()
-            {
-                _arUcoMarkerTracker = ref new ArUcoMarkerTracker(markerSize, dictId, unitySpatialCoodinateSystem);
-            });
+        {
+            _arUcoMarkerTracker = ref new ArUcoMarkerTracker(markerSize, dictId, unitySpatialCoodinateSystem);
+        });
     }
 
     ///
     /// Get the current sensor frame and process using aruco libary. Return a vector of 
     /// detected markers across the application boundary to the C# environment.
     ///
-    Windows::Foundation::Collections::IVector<DetectedArUcoMarker^>^ 
+    Windows::Foundation::Collections::IVector<DetectedArUcoMarker^>^
         MediaFrameSourceGroup::DetectArUcoMarkers(SensorType type)
     {
         // Get the current sensor frame from media frame source group
@@ -118,14 +118,14 @@ namespace HoloLensForCV
         return detections;
     }
 
-	Windows::Foundation::IAsyncAction^ MediaFrameSourceGroup::StopAsync()
-	{
-		return concurrency::create_async(
-			[this]()
-		{
-			return CleanupMediaCaptureAsync();
-		});
-	}
+    Windows::Foundation::IAsyncAction^ MediaFrameSourceGroup::StopAsync()
+    {
+        return concurrency::create_async(
+            [this]()
+        {
+            return CleanupMediaCaptureAsync();
+        });
+    }
 
     SensorFrame^ MediaFrameSourceGroup::GetLatestSensorFrame(
         SensorType sensorType)
@@ -163,6 +163,9 @@ namespace HoloLensForCV
                 const wchar_t* sourceGroupDisplayName =
                     sourceGroup->DisplayName->Data();
 
+                dbg::trace(
+                    L"MediaFrameSourceGroup::InitializeMediaSourceWorkerAsync: source group display name: %s", sourceGroupDisplayName);
+
                 //
                 // Note: this is the display name of the media frame source group associated
                 // with the photo/video camera (or, RGB camera) on HoloLens Development Edition.
@@ -173,8 +176,20 @@ namespace HoloLensForCV
                 const wchar_t* c_HoloLensResearchModeSensorStreamingGroupDisplayName =
                     L"Sensor Streaming";
 
+                const wchar_t* c_HoloLens2PhotoVideoSourceGroupDisplayName =
+                    L"QC Back Camera";
+
+                //
+                // HoloLens 2: QC Back Camera is available. 
+                // Source group: QC Back Camera
+                // Frame Source: Color VideoPreview
+                // Media Format: Video, NV12, 896 x 504, 30 fps
+                //
+
+                // Include the HoloLens 2 display name
                 if (MediaFrameSourceGroupType::PhotoVideoCamera == _mediaFrameSourceGroupType &&
-                    (0 == wcscmp(c_HoloLensDevelopmentEditionPhotoVideoSourceGroupDisplayName, sourceGroupDisplayName)))
+                    (0 == wcscmp(c_HoloLensDevelopmentEditionPhotoVideoSourceGroupDisplayName, sourceGroupDisplayName) ||
+                        0 == wcscmp(c_HoloLens2PhotoVideoSourceGroupDisplayName, sourceGroupDisplayName)))
                 {
 #if DBG_ENABLE_INFORMATIONAL_LOGGING
                     dbg::trace(
@@ -300,14 +315,20 @@ namespace HoloLensForCV
                                 begin(source->SupportedFormats),
                                 end(source->SupportedFormats),
                                 [&](Windows::Media::Capture::Frames::MediaFrameFormat^ format)
-                            {
-                                requestedSubtype =
-                                    GetSubtypeForFrameReader(
-                                        source->Info->SourceKind,
-                                        format);
+                        {
+                            requestedSubtype =
+                                GetSubtypeForFrameReader(
+                                    source->Info->SourceKind,
+                                    format);
 
-                                return requestedSubtype != nullptr;
-                            });
+                            dbg::trace(L"MediaFrameSourceGroup::InitializeMediaSourceWorkerAsync: source kind: %s format major type: %s, frame rate: %s, subtype %s",
+                                source->Info->SourceKind.ToString(),
+                                format->MajorType,
+                                format->FrameRate,
+                                format->Subtype);
+
+                            return requestedSubtype != nullptr;
+                        });
 
                         if (requestedSubtype == nullptr)
                         {
@@ -349,11 +370,11 @@ namespace HoloLensForCV
 
                             Windows::Foundation::EventRegistrationToken token =
                                 frameReader->FrameArrived +=
-                                    ref new Windows::Foundation::TypedEventHandler<
-                                        Windows::Media::Capture::Frames::MediaFrameReader^,
-                                        Windows::Media::Capture::Frames::MediaFrameArrivedEventArgs^>(
-                                            frameReaderContext,
-                                            &MediaFrameReaderContext::FrameArrived);
+                                ref new Windows::Foundation::TypedEventHandler<
+                                Windows::Media::Capture::Frames::MediaFrameReader^,
+                                Windows::Media::Capture::Frames::MediaFrameArrivedEventArgs^>(
+                                    frameReaderContext,
+                                    &MediaFrameReaderContext::FrameArrived);
 
                             //
                             // Keep track of created reader and event handler so it can be stopped later.
@@ -530,28 +551,28 @@ namespace HoloLensForCV
 
         case Windows::Media::Capture::Frames::MediaFrameSourceKind::Color:
 
-			// Force set the media stream to the desired format
-			// Ensure we select the desired video stream, check width and height
-			// MediaFrameSourceInfo->Source->Profile  Width : 896, Height : 504, FrameRate : 29.970030
-			if (format->VideoFormat->Width == 896 && format->VideoFormat->Height == 504)
-				//if (true)
-			{
+            // Force set the media stream to the desired format
+            // Ensure we select the desired video stream, check width and height
+            // MediaFrameSourceInfo->Source->Profile  Width : 896, Height : 504, FrameRate : 29.970030
+            if (format->VideoFormat->Width == 896 && format->VideoFormat->Height == 504)
+                //if (true)
+            {
 #if DBG_ENABLE_INFORMATIONAL_LOGGING
-				dbg::trace(
-					L"MediaFrameSourceGroup::GetSubtypeForFrameReader: evaluating MediaFrameSourceKind::Color with format %s-%s @%i/%iHz and resolution %i x %i",
-					format->MajorType->Data(),
-					format->Subtype->Data(),
-					format->FrameRate->Numerator,
-					format->FrameRate->Denominator,
-					format->VideoFormat->Width,
-					format->VideoFormat->Height);
+                dbg::trace(
+                    L"MediaFrameSourceGroup::GetSubtypeForFrameReader: evaluating MediaFrameSourceKind::Color with format %s-%s @%i/%iHz and resolution %i x %i",
+                    format->MajorType->Data(),
+                    format->Subtype->Data(),
+                    format->FrameRate->Numerator,
+                    format->FrameRate->Denominator,
+                    format->VideoFormat->Width,
+                    format->VideoFormat->Height);
 #endif /* DBG_ENABLE_INFORMATIONAL_LOGGING */
 
-				//
-				// For color sources, we accept anything and request that it be converted to Bgra8.
-				//
-				return Windows::Media::MediaProperties::MediaEncodingSubtypes::Bgra8;
-			}
+                //
+                // For color sources, we accept anything and request that it be converted to Bgra8.
+                //
+                return Windows::Media::MediaProperties::MediaEncodingSubtypes::Bgra8;
+            }
 
 
 #if ENABLE_HOLOLENS_RESEARCH_MODE_SENSORS

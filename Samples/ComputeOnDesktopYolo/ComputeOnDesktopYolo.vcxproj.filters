@@ -54,6 +54,7 @@
     <None Include="Assets\tinyYoloV2_12.onnx">
       <Filter>Assets</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainPage.xaml" />

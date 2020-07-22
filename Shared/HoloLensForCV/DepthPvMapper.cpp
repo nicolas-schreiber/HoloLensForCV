@@ -162,7 +162,10 @@ namespace HoloLensForCV
 			_In_ HoloLensForCV::SensorFrame^ holoLensSensorFrame,
 			_Out_ cv::Mat& wrappedImage)
 		{
-			Windows::Graphics::Imaging::SoftwareBitmap^ bitmap =
+			// Confirm that the sensor frame is not null
+			if (holoLensSensorFrame != nullptr)
+			{
+				Windows::Graphics::Imaging::SoftwareBitmap^ bitmap =
 				holoLensSensorFrame->SoftwareBitmap;
 
 			Windows::Graphics::Imaging::BitmapBuffer^ bitmapBuffer =
@@ -205,6 +208,20 @@ namespace HoloLensForCV
 				bitmap->PixelWidth,
 				wrappedImageType,
 				pixelBufferData);
+				
+			}
+
+			// Otherwise return an empty sensor frame
+			else
+			{
+				uint8_t* pixelBufferData = new uint8_t(); 
+
+				wrappedImage = cv::Mat(
+					0,
+					0,
+					CV_8UC1,
+					pixelBufferData);
+			}
 		}
 
 		// Wrap OpenCV Mat of type CV_8UC1 with SensorFrame.
