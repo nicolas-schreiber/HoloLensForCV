@@ -38,7 +38,7 @@
 
 #define DBG_ENABLE_ERROR_LOGGING 1
 #define DBG_ENABLE_INFORMATIONAL_LOGGING 1
-#define DBG_ENABLE_VERBOSE_LOGGING 0
+#define DBG_ENABLE_VERBOSE_LOGGING 1
 
 #include <Debugging/All.h>
 #include <Io/All.h>
@@ -77,11 +77,6 @@
 
 // Include the depth pv mapper class
 #include "DepthPvMapper.h"
-
-// Include the classes for Yolo streaming
-#include "DeviceReceiver.h"
-#include "DesktopStreamer.h"
-#include "DesktopStreamerHeader.h"
 
 // Includes for ArUco project
 #include "DetectedArUcoMarker.h"

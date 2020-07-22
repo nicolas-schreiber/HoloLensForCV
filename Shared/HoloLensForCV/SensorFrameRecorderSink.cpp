@@ -149,9 +149,9 @@ namespace HoloLensForCV
 		//
 
 #if DBG_ENABLE_VERBOSE_LOGGING
-		dbg::trace(
-			L"SensorFrameRecorderSink::Send: saving sensor frame to %s",
-			bitmapPath);
+		//dbg::trace(
+		//	L"SensorFrameRecorderSink::Send: saving sensor frame to %s",
+		//	bitmapPath);
 #endif /* DBG_ENABLE_VERBOSE_LOGGING */
 
 		Windows::Graphics::Imaging::SoftwareBitmap^ softwareBitmap =

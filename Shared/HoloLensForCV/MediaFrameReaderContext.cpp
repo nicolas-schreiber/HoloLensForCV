@@ -121,8 +121,8 @@ namespace HoloLensForCV
             ref new SensorFrame(_sensorType, timestamp, softwareBitmap);
 
         //
-        // Extract the frame-to-origin transform, if the MFT exposed it:
-        //
+        // Extract the frame-to-origin transform, if the MFT exposed it.
+        // HL1 can access spatial coordinate system from GUID
         bool frameToOriginObtained = false;
         static const Platform::Guid c_MFSampleExtension_Spatial_CameraCoordinateSystem(0x9d13c82f, 0x2199, 0x4e67, 0x91, 0xcd, 0xd1, 0xa4, 0x18, 0x1f, 0x25, 0x34);
 
@@ -133,6 +133,14 @@ namespace HoloLensForCV
             frameCoordinateSystem = safe_cast<Windows::Perception::Spatial::SpatialCoordinateSystem^>(
                 frame->Properties->Lookup(
                     c_MFSampleExtension_Spatial_CameraCoordinateSystem));
+        }
+
+        // HL2 support, doesn't require guid to access spatial coordinate system
+        // https://github.com/qian256/HoloLensARToolKit/blob/master/HoloLensARToolKit/Assets/ARToolKitUWP/Scripts/ARUWPVideo.cs
+        else
+        {
+            frameCoordinateSystem = safe_cast<Windows::Perception::Spatial::SpatialCoordinateSystem^>(
+                frame->CoordinateSystem);
         }
 
         if (nullptr != frameCoordinateSystem)
@@ -197,32 +205,31 @@ namespace HoloLensForCV
             sensorFrame->CameraViewTransform =
                 *reinterpret_cast<Windows::Foundation::Numerics::float4x4*>(
                     cameraViewTransformAsPlatformArray->Data);
-
-#if DBG_ENABLE_VERBOSE_LOGGING
-            auto cameraViewTransform = sensorFrame->CameraViewTransform;
-            dbg::trace(
-                L"cameraViewTransform=[[%f, %f, %f, %f], [%f, %f, %f, %f], [%f, %f, %f, %f], [%f, %f, %f, %f]]",
-                cameraViewTransform.m11, cameraViewTransform.m12, cameraViewTransform.m13, cameraViewTransform.m14,
-                cameraViewTransform.m21, cameraViewTransform.m22, cameraViewTransform.m23, cameraViewTransform.m24,
-                cameraViewTransform.m31, cameraViewTransform.m32, cameraViewTransform.m33, cameraViewTransform.m34,
-                cameraViewTransform.m41, cameraViewTransform.m42, cameraViewTransform.m43, cameraViewTransform.m44);
-#endif /* DBG_ENABLE_VERBOSE_LOGGING */
         }
+            
         else
         {
-            //
-            // Set the CameraViewTransform to zero, making it obvious that we do not
-            // have a valid pose for this frame.
-            //
-            Windows::Foundation::Numerics::float4x4 zero;
+            // Set the CameraViewTransform to identity as we are not able 
+            // to access the camera view transform on HL2
+            auto identity = Windows::Foundation::Numerics::float4x4::identity();
 
-            memset(
-                &zero,
-                0 /* _Val */,
-                sizeof(zero));
+            //memset(
+            //    &identity,
+            //    0 /* _Val */,
+            //    sizeof(identity));
 
-            sensorFrame->CameraViewTransform = zero;
+            sensorFrame->CameraViewTransform = identity;
         }
+
+#if DBG_ENABLE_VERBOSE_LOGGING
+        auto cameraViewTransform = sensorFrame->CameraViewTransform;
+        dbg::trace(
+            L"cameraViewTransform=[[%f, %f, %f, %f], [%f, %f, %f, %f], [%f, %f, %f, %f], [%f, %f, %f, %f]]",
+            cameraViewTransform.m11, cameraViewTransform.m12, cameraViewTransform.m13, cameraViewTransform.m14,
+            cameraViewTransform.m21, cameraViewTransform.m22, cameraViewTransform.m23, cameraViewTransform.m24,
+            cameraViewTransform.m31, cameraViewTransform.m32, cameraViewTransform.m33, cameraViewTransform.m34,
+            cameraViewTransform.m41, cameraViewTransform.m42, cameraViewTransform.m43, cameraViewTransform.m44);
+#endif /* DBG_ENABLE_VERBOSE_LOGGING */
 
         //
         // Extract camera projection transform, if the MFT exposed it:
@@ -236,35 +243,59 @@ namespace HoloLensForCV
                 frame->Properties->Lookup(c_MFSampleExtension_Spatial_CameraProjectionTransform);
             Platform::Array<byte>^ cameraViewTransformAsPlatformArray =
                 safe_cast<Platform::IBoxArray<byte>^>(mfMtUserData)->Value;
+            
+            // Cache the camera projection transform 
             sensorFrame->CameraProjectionTransform =
                 *reinterpret_cast<Windows::Foundation::Numerics::float4x4*>(
                     cameraViewTransformAsPlatformArray->Data);
-
-#if DBG_ENABLE_VERBOSE_LOGGING
-            auto cameraProjectionTransform = sensorFrame->CameraProjectionTransform;
-            dbg::trace(
-                L"cameraProjectionTransform=[[%f, %f, %f, %f], [%f, %f, %f, %f], [%f, %f, %f, %f], [%f, %f, %f, %f]]",
-                cameraProjectionTransform.m11, cameraProjectionTransform.m12, cameraProjectionTransform.m13, cameraProjectionTransform.m14,
-                cameraProjectionTransform.m21, cameraProjectionTransform.m22, cameraProjectionTransform.m23, cameraProjectionTransform.m24,
-                cameraProjectionTransform.m31, cameraProjectionTransform.m32, cameraProjectionTransform.m33, cameraProjectionTransform.m34,
-                cameraProjectionTransform.m41, cameraProjectionTransform.m42, cameraProjectionTransform.m43, cameraProjectionTransform.m44);
-#endif /* DBG_ENABLE_VERBOSE_LOGGING */
         }
+
+        // HL2: TODO, make this more intuitive to control from Unity
         else
         {
-            //
             // Set the CameraProjectionTransform to zero, making it obvious that we do not
             // have a valid pose for this frame.
             //
-            Windows::Foundation::Numerics::float4x4 zero;
+            
+            // HL2: check to see if the camera intrinsics exist - they don't...
+            // Set manually for testing
+            // https://raw.githubusercontent.com/qian256/HoloLensCamCalib/master/Examples/HL2/1504x846/1504x846.json
+            // {"dist_coeff": [[0.02999846564909687, -0.05913722400315286, 0.0032957434002814606, 0.003026287821656661, 0.0]], 
+            // "camera_matrix": [[1169.007992972877, 0.0, 758.54471508651], [0.0, 1170.7600067416026, 413.6251662702983], [0.0, 0.0, 1.0]], 
+            // "width": 1504, "height": 845}
 
-            memset(
-                &zero,
-                0 /* _Val */,
-                sizeof(zero));
+            Windows::Foundation::Numerics::float2 focalLength(1169.01f, 1170.76f); // (0,0) & (1,1)
+            Windows::Foundation::Numerics::float2 principalPoint(758.54f, 413.63f); // (0,2) & (2,2)
+            Windows::Foundation::Numerics::float3 radialDistortion(0.02999f, -0.05914f, 0.0f); // (0,0) & (0,1) & (0,4)
+            Windows::Foundation::Numerics::float2 tangentialDistortion(0.003295f, 0.003026f); // (0,2) & (0,3)
+            uint imageWidth(1504);
+            uint imageHeight(845);
 
-            sensorFrame->CameraProjectionTransform = zero;
+            // Create the camera intrinsics matrix from manual calculations
+            auto manualCameraIntrinsics = ref new Windows::Media::Devices::Core::CameraIntrinsics(focalLength, principalPoint, radialDistortion, tangentialDistortion, imageWidth, imageHeight);
+            
+            // Cache to the current sensor frame
+            sensorFrame->CoreCameraIntrinsics = manualCameraIntrinsics;
+
+            //Windows::Foundation::Numerics::float4x4 zero;
+
+            //memset(
+            //    &zero,
+            //    0 /* _Val */,
+            //    sizeof(zero));
+
+            //sensorFrame->CameraProjectionTransform = zero;
         }
+
+#if DBG_ENABLE_VERBOSE_LOGGING
+        auto cameraProjectionTransform = sensorFrame->CameraProjectionTransform;
+        dbg::trace(
+            L"cameraProjectionTransform=[[%f, %f, %f, %f], [%f, %f, %f, %f], [%f, %f, %f, %f], [%f, %f, %f, %f]]",
+            cameraProjectionTransform.m11, cameraProjectionTransform.m12, cameraProjectionTransform.m13, cameraProjectionTransform.m14,
+            cameraProjectionTransform.m21, cameraProjectionTransform.m22, cameraProjectionTransform.m23, cameraProjectionTransform.m24,
+            cameraProjectionTransform.m31, cameraProjectionTransform.m32, cameraProjectionTransform.m33, cameraProjectionTransform.m34,
+            cameraProjectionTransform.m41, cameraProjectionTransform.m42, cameraProjectionTransform.m43, cameraProjectionTransform.m44);
+#endif /* DBG_ENABLE_VERBOSE_LOGGING */
 
         //
         // See if the frame comes with HoloLens Sensor Streaming specific intrinsics...
@@ -305,8 +336,15 @@ namespace HoloLensForCV
                     (int32_t)_sensorType);
             }
 
-            sensorFrame->CoreCameraIntrinsics =
-                frame->VideoMediaFrame->CameraIntrinsics;
+            Microsoft::WRL::ComPtr<SensorStreaming::ICameraIntrinsics> sensorStreamingCameraIntrinsics =
+                reinterpret_cast<SensorStreaming::ICameraIntrinsics*>(
+                    frame->VideoMediaFrame->CameraIntrinsics);
+
+            sensorFrame->SensorStreamingCameraIntrinsics =
+                ref new CameraIntrinsics(
+                    sensorStreamingCameraIntrinsics,
+                    softwareBitmap->PixelWidth,
+                    softwareBitmap->PixelHeight);
         }
 
         if (nullptr != _sensorFrameSink)

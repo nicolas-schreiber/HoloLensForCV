@@ -20,10 +20,24 @@ namespace HoloLensForCV
 		ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 			SensorFrame^ pvSensorFrame)
 	{
+
 		// Clear the prior interface vector containing
 		// detected aruco markers
 		Windows::Foundation::Collections::IVector<DetectedArUcoMarker^>^ detectedMarkers
 			= ref new Platform::Collections::Vector<DetectedArUcoMarker^>();
+
+		// If null sensor frame, return zero detections
+		if (pvSensorFrame == nullptr)
+		{
+			DetectedArUcoMarker^ zeroMarker = ref new DetectedArUcoMarker(
+				0,
+				Windows::Foundation::Numerics::float3::zero(),
+				Windows::Foundation::Numerics::float3::zero(),
+				Windows::Foundation::Numerics::float4x4::identity());
+
+			 detectedMarkers->Append(zeroMarker);
+			 return detectedMarkers;
+		}
 
 		// https://docs.opencv.org/4.1.1/d5/dae/tutorial_aruco_detection.html
 		cv::Mat wrappedMat;

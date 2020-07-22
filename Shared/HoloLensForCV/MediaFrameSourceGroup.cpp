@@ -321,12 +321,6 @@ namespace HoloLensForCV
                                     source->Info->SourceKind,
                                     format);
 
-                            dbg::trace(L"MediaFrameSourceGroup::InitializeMediaSourceWorkerAsync: source kind: %s format major type: %s, frame rate: %s, subtype %s",
-                                source->Info->SourceKind.ToString(),
-                                format->MajorType,
-                                format->FrameRate,
-                                format->Subtype);
-
                             return requestedSubtype != nullptr;
                         });
 
@@ -554,8 +548,8 @@ namespace HoloLensForCV
             // Force set the media stream to the desired format
             // Ensure we select the desired video stream, check width and height
             // MediaFrameSourceInfo->Source->Profile  Width : 896, Height : 504, FrameRate : 29.970030
-            if (format->VideoFormat->Width == 896 && format->VideoFormat->Height == 504)
-                //if (true)
+            //if (format->VideoFormat->Width == 896 && format->VideoFormat->Height == 504)
+            if (true)
             {
 #if DBG_ENABLE_INFORMATIONAL_LOGGING
                 dbg::trace(

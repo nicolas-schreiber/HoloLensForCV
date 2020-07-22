@@ -234,10 +234,7 @@
     <ClInclude Include="CameraIntrinsics.h" />
     <ClInclude Include="CsvWriter.h" />
     <ClInclude Include="DepthPvMapper.h" />
-    <ClInclude Include="DesktopStreamer.h" />
-    <ClInclude Include="DesktopStreamerHeader.h" />
     <ClInclude Include="DetectedArUcoMarker.h" />
-    <ClInclude Include="DeviceReceiver.h" />
     <ClInclude Include="ICameraIntrinsics.h" />
     <ClInclude Include="ISensorFrameSink.h" />
     <ClInclude Include="ISensorFrameSinkGroup.h" />
@@ -261,10 +258,7 @@
     <ClCompile Include="CameraIntrinsics.cpp" />
     <ClCompile Include="CsvWriter.cpp" />
     <ClCompile Include="DepthPvMapper.cpp" />
-    <ClCompile Include="DesktopStreamer.cpp" />
-    <ClCompile Include="DesktopStreamerHeader.cpp" />
     <ClCompile Include="DetectedArUcoMarker.cpp" />
-    <ClCompile Include="DeviceReceiver.cpp" />
     <ClCompile Include="MediaFrameReaderContext.cpp" />
     <ClCompile Include="MultiFrameBuffer.cpp" />
     <ClCompile Include="SensorFrame.cpp" />
@@ -291,9 +285,6 @@
     </ProjectReference>
     <ProjectReference Include="..\Debugging\Debugging.vcxproj">
       <Project>{ad347424-7340-47ce-a979-2c7f2df0eb38}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\YoloRuntime\YoloRuntime.csproj">
-      <Project>{1a33d674-5293-413d-a7ed-ebf5308bd1a2}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
