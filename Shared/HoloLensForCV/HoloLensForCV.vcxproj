@@ -235,6 +235,7 @@
     <ClInclude Include="CsvWriter.h" />
     <ClInclude Include="DepthPvMapper.h" />
     <ClInclude Include="DetectedArUcoMarker.h" />
+    <ClInclude Include="DeviceType.h" />
     <ClInclude Include="ICameraIntrinsics.h" />
     <ClInclude Include="ISensorFrameSink.h" />
     <ClInclude Include="ISensorFrameSinkGroup.h" />

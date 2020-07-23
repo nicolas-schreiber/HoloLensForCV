@@ -259,17 +259,19 @@ namespace HoloLensForCV
             
             // HL2: check to see if the camera intrinsics exist - they don't...
             // Set manually for testing
-            // https://raw.githubusercontent.com/qian256/HoloLensCamCalib/master/Examples/HL2/1504x846/1504x846.json
-            // {"dist_coeff": [[0.02999846564909687, -0.05913722400315286, 0.0032957434002814606, 0.003026287821656661, 0.0]], 
-            // "camera_matrix": [[1169.007992972877, 0.0, 758.54471508651], [0.0, 1170.7600067416026, 413.6251662702983], [0.0, 0.0, 1.0]], 
-            // "width": 1504, "height": 845}
+            // https://github.com/doughtmw/HoloLensCamCalib/blob/master/Examples/HL2/896x504/data.json
+            /*{"camera_matrix": [[687.7084133264314, 0.0, 435.87585657815976], [0.0, 688.8967461985196, 242.48218786961218], [0.0, 0.0, 1.0]], 
+                
+            "dist_coeff" : [[0.007576387773579617, -0.008347022259459137, 0.004030833288551814, -0.0005115698316792066, 0.0]], 
+                
+            "height" : 504, "width" : 896}*/
 
-            Windows::Foundation::Numerics::float2 focalLength(1169.01f, 1170.76f); // (0,0) & (1,1)
-            Windows::Foundation::Numerics::float2 principalPoint(758.54f, 413.63f); // (0,2) & (2,2)
-            Windows::Foundation::Numerics::float3 radialDistortion(0.02999f, -0.05914f, 0.0f); // (0,0) & (0,1) & (0,4)
-            Windows::Foundation::Numerics::float2 tangentialDistortion(0.003295f, 0.003026f); // (0,2) & (0,3)
-            uint imageWidth(1504);
-            uint imageHeight(845);
+            Windows::Foundation::Numerics::float2 focalLength(687.7084133264314f, 688.8967461985196f); // (0,0) & (1,1)
+            Windows::Foundation::Numerics::float2 principalPoint(435.87585657815976f, 242.48218786961218f); // (0,2) & (2,2)
+            Windows::Foundation::Numerics::float3 radialDistortion(0.007576387773579617f, -0.008347022259459137f, 0.0f); // (0,0) & (0,1) & (0,4)
+            Windows::Foundation::Numerics::float2 tangentialDistortion(0.004030833288551814f, -0.0005115698316792066f); // (0,2) & (0,3)
+            uint imageWidth(896);
+            uint imageHeight(504);
 
             // Create the camera intrinsics matrix from manual calculations
             auto manualCameraIntrinsics = ref new Windows::Media::Devices::Core::CameraIntrinsics(focalLength, principalPoint, radialDistortion, tangentialDistortion, imageWidth, imageHeight);

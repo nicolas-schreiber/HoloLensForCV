@@ -115,6 +115,7 @@
     <ClInclude Include="DetectedArUcoMarker.h">
       <Filter>ArUco Marker Detection</Filter>
     </ClInclude>
+    <ClInclude Include="DeviceType.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

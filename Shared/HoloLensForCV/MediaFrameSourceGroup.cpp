@@ -19,9 +19,11 @@ namespace HoloLensForCV
     MediaFrameSourceGroup::MediaFrameSourceGroup(
         _In_ MediaFrameSourceGroupType mediaFrameSourceGroupType,
         _In_ SpatialPerception^ spatialPerception,
+        _In_ DeviceType deviceType,
         _In_opt_ ISensorFrameSinkGroup^ optionalSensorFrameSinkGroup)
         : _mediaFrameSourceGroupType(mediaFrameSourceGroupType)
         , _spatialPerception(spatialPerception)
+        , _deviceType(deviceType)
         , _optionalSensorFrameSinkGroup(optionalSensorFrameSinkGroup)
     {
     }
@@ -92,13 +94,13 @@ namespace HoloLensForCV
     Windows::Foundation::IAsyncAction^ MediaFrameSourceGroup::StartArUcoMarkerTrackerAsync(
         float markerSize,
         int dictId,
-        Windows::Perception::Spatial::SpatialCoordinateSystem^ unitySpatialCoodinateSystem)
+        Windows::Perception::Spatial::SpatialCoordinateSystem^ unitySpatialCoordinateSystem)
     {
         // Instantiate aruco marker tracker class with parameters.
         return concurrency::create_async(
-            [this, markerSize, dictId, unitySpatialCoodinateSystem]()
+            [this, markerSize, dictId, unitySpatialCoordinateSystem]()
         {
-            _arUcoMarkerTracker = ref new ArUcoMarkerTracker(markerSize, dictId, unitySpatialCoodinateSystem);
+            _arUcoMarkerTracker = ref new ArUcoMarkerTracker(markerSize, dictId, unitySpatialCoordinateSystem);
         });
     }
 
@@ -548,8 +550,9 @@ namespace HoloLensForCV
             // Force set the media stream to the desired format
             // Ensure we select the desired video stream, check width and height
             // MediaFrameSourceInfo->Source->Profile  Width : 896, Height : 504, FrameRate : 29.970030
-            //if (format->VideoFormat->Width == 896 && format->VideoFormat->Height == 504)
-            if (true)
+            // Force the lowest resolution for streaming. TODO: make this something that can be selected.
+            if (format->VideoFormat->Width == 896 && format->VideoFormat->Height == 504)
+            //if (true)
             {
 #if DBG_ENABLE_INFORMATIONAL_LOGGING
                 dbg::trace(
@@ -676,8 +679,19 @@ namespace HoloLensForCV
         //
         // This media capture can share streaming with other apps.
         //
-        settings->SharingMode =
-            Windows::Media::Capture::MediaCaptureSharingMode::SharedReadOnly;
+
+        // For HL1
+        if (_deviceType == DeviceType::HL1)
+        {
+            settings->SharingMode =
+                Windows::Media::Capture::MediaCaptureSharingMode::SharedReadOnly;
+        }
+        // For HL2
+        if (_deviceType == DeviceType::HL2)
+        {
+            settings->SharingMode =
+                Windows::Media::Capture::MediaCaptureSharingMode::ExclusiveControl;
+        }
 
         //
         // Only stream video and don't initialize audio capture devices.

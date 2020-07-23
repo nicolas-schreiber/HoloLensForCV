@@ -12,6 +12,7 @@
 #pragma once
 #include "DetectedArUcoMarker.h"
 #include "ArUcoMarkerTracker.h"
+#include "DeviceType.h"
 
 namespace HoloLensForCV
 {
@@ -23,7 +24,8 @@ namespace HoloLensForCV
     public:
         MediaFrameSourceGroup(
             _In_ MediaFrameSourceGroupType mediaFrameSourceGroupType,
-            _In_ SpatialPerception^ spacialPerception,
+            _In_ SpatialPerception^ spatialPerception,
+            _In_ DeviceType deviceType,
             _In_opt_ ISensorFrameSinkGroup^ optionalSensorFrameSinkGroup);
 
         void EnableAll();
@@ -85,6 +87,7 @@ namespace HoloLensForCV
 
         MediaFrameSourceGroupType _mediaFrameSourceGroupType;
         SpatialPerception^ _spatialPerception;
+        DeviceType _deviceType;
 
         Platform::Agile<Windows::Media::Capture::MediaCapture> _mediaCapture;
 
