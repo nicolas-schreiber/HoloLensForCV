@@ -76,6 +76,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\..\packages\OpenCV.HoloLens.3411.0.0\build\native\OpenCV.HoloLens.targets" Condition="Exists('..\..\packages\OpenCV.HoloLens.3411.0.0\build\native\OpenCV.HoloLens.targets')" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -301,13 +302,10 @@
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\OpenCV.HoloLens.411.0.0\build\native\OpenCV.HoloLens.targets" Condition="Exists('..\..\packages\OpenCV.HoloLens.411.0.0\build\native\OpenCV.HoloLens.targets')" />
-  </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\OpenCV.HoloLens.411.0.0\build\native\OpenCV.HoloLens.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenCV.HoloLens.411.0.0\build\native\OpenCV.HoloLens.targets'))" />
+    <Error Condition="!Exists('..\..\packages\OpenCV.HoloLens.3411.0.0\build\native\OpenCV.HoloLens.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenCV.HoloLens.3411.0.0\build\native\OpenCV.HoloLens.targets'))" />
   </Target>
 </Project>
