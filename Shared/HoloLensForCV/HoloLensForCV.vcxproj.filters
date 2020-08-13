@@ -16,12 +16,6 @@
     <Filter Include="Sensor Frame Streaming">
       <UniqueIdentifier>{309ac171-0db4-46d1-bacc-0088cc98c9af}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Yolo Streaming">
-      <UniqueIdentifier>{2a877de7-178e-4f6a-98a0-4845f5e11963}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Yolo Receiver">
-      <UniqueIdentifier>{bbf62d53-4beb-42c0-85fc-d1a66f9b1ff3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Depth PV Mapper">
       <UniqueIdentifier>{d9960610-9f72-4e74-89ab-53cacaa89523}</UniqueIdentifier>
     </Filter>
@@ -62,15 +56,6 @@
     </ClCompile>
     <ClCompile Include="CameraIntrinsics.cpp" />
     <ClCompile Include="MultiFrameBuffer.cpp" />
-    <ClCompile Include="DesktopStreamer.cpp">
-      <Filter>Yolo Streaming</Filter>
-    </ClCompile>
-    <ClCompile Include="DesktopStreamerHeader.cpp">
-      <Filter>Yolo Streaming</Filter>
-    </ClCompile>
-    <ClCompile Include="DeviceReceiver.cpp">
-      <Filter>Yolo Receiver</Filter>
-    </ClCompile>
     <ClCompile Include="DepthPvMapper.cpp">
       <Filter>Depth PV Mapper</Filter>
     </ClCompile>
@@ -121,15 +106,6 @@
     <ClInclude Include="CameraIntrinsics.h" />
     <ClInclude Include="ICameraIntrinsics.h" />
     <ClInclude Include="MultiFrameBuffer.h" />
-    <ClInclude Include="DesktopStreamer.h">
-      <Filter>Yolo Streaming</Filter>
-    </ClInclude>
-    <ClInclude Include="DesktopStreamerHeader.h">
-      <Filter>Yolo Streaming</Filter>
-    </ClInclude>
-    <ClInclude Include="DeviceReceiver.h">
-      <Filter>Yolo Receiver</Filter>
-    </ClInclude>
     <ClInclude Include="DepthPvMapper.h">
       <Filter>Depth PV Mapper</Filter>
     </ClInclude>

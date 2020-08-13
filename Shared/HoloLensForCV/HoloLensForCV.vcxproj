@@ -234,10 +234,7 @@
     <ClInclude Include="CameraIntrinsics.h" />
     <ClInclude Include="CsvWriter.h" />
     <ClInclude Include="DepthPvMapper.h" />
-    <ClInclude Include="DesktopStreamer.h" />
-    <ClInclude Include="DesktopStreamerHeader.h" />
     <ClInclude Include="DetectedArUcoMarker.h" />
-    <ClInclude Include="DeviceReceiver.h" />
     <ClInclude Include="ICameraIntrinsics.h" />
     <ClInclude Include="ISensorFrameSink.h" />
     <ClInclude Include="ISensorFrameSinkGroup.h" />
@@ -261,10 +258,7 @@
     <ClCompile Include="CameraIntrinsics.cpp" />
     <ClCompile Include="CsvWriter.cpp" />
     <ClCompile Include="DepthPvMapper.cpp" />
-    <ClCompile Include="DesktopStreamer.cpp" />
-    <ClCompile Include="DesktopStreamerHeader.cpp" />
     <ClCompile Include="DetectedArUcoMarker.cpp" />
-    <ClCompile Include="DeviceReceiver.cpp" />
     <ClCompile Include="MediaFrameReaderContext.cpp" />
     <ClCompile Include="MultiFrameBuffer.cpp" />
     <ClCompile Include="SensorFrame.cpp" />
@@ -292,9 +286,6 @@
     <ProjectReference Include="..\Debugging\Debugging.vcxproj">
       <Project>{ad347424-7340-47ce-a979-2c7f2df0eb38}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\YoloRuntime\YoloRuntime.csproj">
-      <Project>{1a33d674-5293-413d-a7ed-ebf5308bd1a2}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -302,12 +293,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\OpenCV.HoloLens.411.0.0\build\native\OpenCV.HoloLens.targets" Condition="Exists('..\..\packages\OpenCV.HoloLens.411.0.0\build\native\OpenCV.HoloLens.targets')" />
+    <Import Project="..\..\packages\OpenCV.HoloLens.3411.0.0\build\native\OpenCV.HoloLens.targets" Condition="Exists('..\..\packages\OpenCV.HoloLens.3411.0.0\build\native\OpenCV.HoloLens.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\OpenCV.HoloLens.411.0.0\build\native\OpenCV.HoloLens.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenCV.HoloLens.411.0.0\build\native\OpenCV.HoloLens.targets'))" />
+    <Error Condition="!Exists('..\..\packages\OpenCV.HoloLens.3411.0.0\build\native\OpenCV.HoloLens.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenCV.HoloLens.3411.0.0\build\native\OpenCV.HoloLens.targets'))" />
   </Target>
 </Project>
