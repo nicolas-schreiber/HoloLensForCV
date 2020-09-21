@@ -16,9 +16,11 @@ namespace HoloLensForCV
     MediaFrameReaderContext::MediaFrameReaderContext(
         _In_ SensorType sensorType,
         _In_ SpatialPerception^ spatialPerception,
+        _In_ DeviceType deviceType,
         _In_opt_ ISensorFrameSink^ sensorFrameSink)
         : _sensorType(sensorType)
         , _spatialPerception(spatialPerception)
+        , _deviceType(deviceType)
         , _sensorFrameSink(sensorFrameSink)
     {
     }
@@ -128,15 +130,22 @@ namespace HoloLensForCV
 
         Windows::Perception::Spatial::SpatialCoordinateSystem^ frameCoordinateSystem = nullptr;
 
-        if (frame->Properties->HasKey(c_MFSampleExtension_Spatial_CameraCoordinateSystem))
+        // Has key for spatial coordinate system OR is HL1
+        if (frame->Properties->HasKey(c_MFSampleExtension_Spatial_CameraCoordinateSystem) ||
+            _deviceType == DeviceType::HL1)
         {
             frameCoordinateSystem = safe_cast<Windows::Perception::Spatial::SpatialCoordinateSystem^>(
                 frame->Properties->Lookup(
                     c_MFSampleExtension_Spatial_CameraCoordinateSystem));
         }
-
         // HL2 support, doesn't require guid to access spatial coordinate system
         // https://github.com/qian256/HoloLensARToolKit/blob/master/HoloLensARToolKit/Assets/ARToolKitUWP/Scripts/ARUWPVideo.cs
+        else if (_deviceType == DeviceType::HL2)
+        {
+            frameCoordinateSystem = safe_cast<Windows::Perception::Spatial::SpatialCoordinateSystem^>(
+                frame->CoordinateSystem);
+        }
+
         else
         {
             frameCoordinateSystem = safe_cast<Windows::Perception::Spatial::SpatialCoordinateSystem^>(
@@ -196,7 +205,9 @@ namespace HoloLensForCV
         static const Platform::Guid c_MFSampleExtension_Spatial_CameraViewTransform(
             0x4e251fa4, 0x830f, 0x4770, 0x85, 0x9a, 0x4b, 0x8d, 0x99, 0xaa, 0x80, 0x9b);
 
-        if (frame->Properties->HasKey(c_MFSampleExtension_Spatial_CameraViewTransform))
+        // HL1 OR has accessible GUID for camera view transform
+        if (frame->Properties->HasKey(c_MFSampleExtension_Spatial_CameraViewTransform) ||
+            _deviceType == DeviceType::HL1)
         {
             Platform::Object^ mfMtUserData =
                 frame->Properties->Lookup(c_MFSampleExtension_Spatial_CameraViewTransform);
@@ -207,20 +218,29 @@ namespace HoloLensForCV
                     cameraViewTransformAsPlatformArray->Data);
         }
             
-        else
+        // HL2
+        else if (_deviceType == DeviceType::HL2)
         {
             // Set the CameraViewTransform to identity as we are not able 
             // to access the camera view transform on HL2
             auto identity = Windows::Foundation::Numerics::float4x4::identity();
 
-            //memset(
-            //    &identity,
-            //    0 /* _Val */,
-            //    sizeof(identity));
-
             sensorFrame->CameraViewTransform = identity;
         }
 
+        else
+        {
+            // Set the CameraViewTransform to zero to make it clear
+            // that we don't have access
+            Windows::Foundation::Numerics::float4x4 zero;
+
+            memset(
+                &zero,
+                0 /* _Val */,
+                sizeof(zero));
+
+            sensorFrame->CameraViewTransform = zero;
+        }
 #if DBG_ENABLE_VERBOSE_LOGGING
         auto cameraViewTransform = sensorFrame->CameraViewTransform;
         dbg::trace(
@@ -237,8 +257,10 @@ namespace HoloLensForCV
         static const Platform::Guid c_MFSampleExtension_Spatial_CameraProjectionTransform(
             0x47f9fcb5, 0x2a02, 0x4f26, 0xa4, 0x77, 0x79, 0x2f, 0xdf, 0x95, 0x88, 0x6a);
 
-        if (frame->Properties->HasKey(c_MFSampleExtension_Spatial_CameraProjectionTransform))
-        {
+        // HL1 or has GUID to access camera projection transform
+        if (frame->Properties->HasKey(c_MFSampleExtension_Spatial_CameraProjectionTransform) ||
+            _deviceType == DeviceType::HL1)
+            {
             Platform::Object^ mfMtUserData =
                 frame->Properties->Lookup(c_MFSampleExtension_Spatial_CameraProjectionTransform);
             Platform::Array<byte>^ cameraViewTransformAsPlatformArray =
@@ -251,12 +273,8 @@ namespace HoloLensForCV
         }
 
         // HL2: TODO, make this more intuitive to control from Unity
-        else
+        else if (_deviceType == DeviceType::HL2)
         {
-            // Set the CameraProjectionTransform to zero, making it obvious that we do not
-            // have a valid pose for this frame.
-            //
-            
             // HL2: check to see if the camera intrinsics exist - they don't...
             // Set manually for testing
             // https://github.com/doughtmw/HoloLensCamCalib/blob/master/Examples/HL2/896x504/data.json
@@ -278,15 +296,22 @@ namespace HoloLensForCV
             
             // Cache to the current sensor frame
             sensorFrame->CoreCameraIntrinsics = manualCameraIntrinsics;
+        }
 
-            //Windows::Foundation::Numerics::float4x4 zero;
+        else
+        {
+            // Set the CameraProjectionTransform to zero, making it obvious that we do not
+            // have a valid pose for this frame.
 
-            //memset(
-            //    &zero,
-            //    0 /* _Val */,
-            //    sizeof(zero));
+            Windows::Foundation::Numerics::float4x4 zero;
 
-            //sensorFrame->CameraProjectionTransform = zero;
+            memset(
+                &zero,
+                0 /* _Val */,
+                sizeof(zero));
+
+            sensorFrame->CameraProjectionTransform = zero;
+
         }
 
 #if DBG_ENABLE_VERBOSE_LOGGING
@@ -338,15 +363,24 @@ namespace HoloLensForCV
                     (int32_t)_sensorType);
             }
 
-            Microsoft::WRL::ComPtr<SensorStreaming::ICameraIntrinsics> sensorStreamingCameraIntrinsics =
-                reinterpret_cast<SensorStreaming::ICameraIntrinsics*>(
-                    frame->VideoMediaFrame->CameraIntrinsics);
+            if (_deviceType == DeviceType::HL1)
+            {
+                sensorFrame->CoreCameraIntrinsics =
+                    frame->VideoMediaFrame->CameraIntrinsics;
+            }
+            
+            if (_deviceType == DeviceType::HL2)
+            {
+                Microsoft::WRL::ComPtr<SensorStreaming::ICameraIntrinsics> sensorStreamingCameraIntrinsics =
+                    reinterpret_cast<SensorStreaming::ICameraIntrinsics*>(
+                        frame->VideoMediaFrame->CameraIntrinsics);
 
-            sensorFrame->SensorStreamingCameraIntrinsics =
-                ref new CameraIntrinsics(
-                    sensorStreamingCameraIntrinsics,
-                    softwareBitmap->PixelWidth,
-                    softwareBitmap->PixelHeight);
+                sensorFrame->SensorStreamingCameraIntrinsics =
+                    ref new CameraIntrinsics(
+                        sensorStreamingCameraIntrinsics,
+                        softwareBitmap->PixelWidth,
+                        softwareBitmap->PixelHeight);
+            }
         }
 
         if (nullptr != _sensorFrameSink)

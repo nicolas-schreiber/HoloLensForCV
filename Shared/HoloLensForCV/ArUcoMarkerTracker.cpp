@@ -87,7 +87,15 @@ namespace HoloLensForCV
 			if (!cameraToUnityReference)
 			{
 				dbg::trace(L"Failed to obtain transform to unity coordinate space.");
-				throw ref new Platform::FailureException();
+				DetectedArUcoMarker^ marker = ref new DetectedArUcoMarker(
+					0,
+					Windows::Foundation::Numerics::float3::zero(),
+					Windows::Foundation::Numerics::float3::zero(),
+					Windows::Foundation::Numerics::float4x4::identity());
+
+				// Add the marker to interface vector of markers
+				detectedMarkers->Append(marker);
+				return detectedMarkers;
 			}
 
 			// Get camera to unity transformation matrix

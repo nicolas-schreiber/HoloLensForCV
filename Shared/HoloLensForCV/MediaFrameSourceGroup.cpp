@@ -359,6 +359,7 @@ namespace HoloLensForCV
                                 ref new MediaFrameReaderContext(
                                     sensorType,
                                     _spatialPerception,
+                                    _deviceType,
                                     optionalSensorFrameSink);
 
                             _frameReaders[(int32_t)sensorType] =
