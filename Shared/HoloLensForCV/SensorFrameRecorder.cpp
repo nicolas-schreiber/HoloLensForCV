@@ -251,9 +251,7 @@ namespace HoloLensForCV
             }
 
             //TODO: Better conversion to char*
-            std::wstring ws(fileName);
-            std::string outputFilePath;
-            outputFilePath.assign(ws.begin(), ws.end());
+            std::string outputFilePath((char*) fileName);
 
             FILE* file = nullptr;
             ASSERT(0 == fopen_s(&file, outputFilePath.c_str(), "wb"));
