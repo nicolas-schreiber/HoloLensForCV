@@ -11,7 +11,9 @@
 
 #pragma once
 #include "DetectedArUcoMarker.h"
+#include "DetectedChArUcoBoard.h"
 #include "ArUcoMarkerTracker.h"
+#include "ChArUcoBoardTracker.h"
 #include "DeviceType.h"
 
 namespace HoloLensForCV
@@ -35,8 +37,10 @@ namespace HoloLensForCV
 
         Windows::Foundation::IAsyncAction^ StartAsync();
 
+        Windows::Foundation::IAsyncAction^ StartChArUcoBoardTrackerAsync(int squaresX, int squaresY, float squareSize, float markerSize, int dictId, Windows::Perception::Spatial::SpatialCoordinateSystem^ unitySpatialCoordinateSystem);
         Windows::Foundation::IAsyncAction^ StartArUcoMarkerTrackerAsync(float markerSize, int dictId, Windows::Perception::Spatial::SpatialCoordinateSystem^ unitySpatialCoodinateSystem);
         Windows::Foundation::Collections::IVector<DetectedArUcoMarker^>^ DetectArUcoMarkers(SensorType type);
+        DetectedChArUcoBoard^ DetectChArUcoBoard(SensorType type);
 
 		Windows::Foundation::IAsyncAction^ StopAsync();
 
@@ -84,6 +88,7 @@ namespace HoloLensForCV
 
     private:
         ArUcoMarkerTracker^ _arUcoMarkerTracker;
+        ChArUcoBoardTracker^ _chArUcoBoardTracker;
 
         MediaFrameSourceGroupType _mediaFrameSourceGroupType;
         SpatialPerception^ _spatialPerception;

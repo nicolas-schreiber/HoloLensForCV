@@ -22,6 +22,9 @@
     <Filter Include="ArUco Marker Detection">
       <UniqueIdentifier>{a84977bb-73eb-49b3-b4c2-49848f170713}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ChArUco Board Detection">
+      <UniqueIdentifier>{ba9372d4-d817-4fe1-a947-5d12847b206a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -64,6 +67,12 @@
     </ClCompile>
     <ClCompile Include="DetectedArUcoMarker.cpp">
       <Filter>ArUco Marker Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="ChArUcoBoardTracker.cpp">
+      <Filter>ChArUco Board Detection</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectedChAruCoBoard.cpp">
+      <Filter>ChArUco Board Detection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +125,12 @@
       <Filter>ArUco Marker Detection</Filter>
     </ClInclude>
     <ClInclude Include="DeviceType.h" />
+    <ClInclude Include="ChArUcoBoardTracker.h">
+      <Filter>ChArUco Board Detection</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectedChArUcoBoard.h">
+      <Filter>ChArUco Board Detection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

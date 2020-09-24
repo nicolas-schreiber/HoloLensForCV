@@ -82,4 +82,5 @@
 #include "DetectedArUcoMarker.h"
 #include "ArUcoMarkerTracker.h"
 #include <opencv2/aruco.hpp>
+#include <opencv2/aruco/charuco.hpp>
 #include "DeviceType.h"
