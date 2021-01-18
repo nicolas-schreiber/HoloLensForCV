@@ -13,7 +13,7 @@
 #include "DetectedArUcoMarker.h"
 #include "ArUcoMarkerTracker.h"
 #include "DeviceType.h"
-#include <opencv2/video/tracking.hpp>
+//#include <opencv2/video/tracking.hpp>
 
 namespace HoloLensForCV
 {
@@ -27,7 +27,13 @@ namespace HoloLensForCV
             _In_ MediaFrameSourceGroupType mediaFrameSourceGroupType,
             _In_ SpatialPerception^ spatialPerception,
             _In_ DeviceType deviceType,
-            _In_opt_ ISensorFrameSinkGroup^ optionalSensorFrameSinkGroup);
+            _In_opt_ ISensorFrameSinkGroup^ optionalSensorFrameSinkGroup,
+            _In_ float fL1, _In_ float fL2,
+            _In_ float pP1, _In_ float pP2,
+            _In_ float rD1, _In_ float rD2, _In_ float rD3,
+            _In_ float tD1, _In_ float tD2,
+            _In_ int imageWidth,
+            _In_ int imageHeight);
 
         void EnableAll();
 
@@ -87,18 +93,19 @@ namespace HoloLensForCV
 
     private:
         ArUcoMarkerTracker^ _arUcoMarkerTracker;
+        CameraIntrinsicsAndExtrinsics^ _cameraIntrinsicsAndExtrinsics;
         //Windows::Foundation::Collections::IVector<DetectedArUcoMarker^>^ _detections = ref new Platform::Collections::Vector<DetectedArUcoMarker^>();
 
-        // Create a Kalman filter to filter bad tracking results
-        // https://docs.opencv.org/master/dc/d2c/tutorial_real_time_pose.html
-        void initKalmanFilter(cv::KalmanFilter& KF, int nStates, int nMeasurements, int nInputs, double dt);
-        void fillMeasurements(cv::Mat& measurements, const cv::Mat& translation_measured, const cv::Mat& rotation_measured);
-        void updateKalmanFilter(cv::KalmanFilter& KF, cv::Mat& measurement, cv::Mat& translation_estimated, cv::Mat& rotation_estimated);
-        cv::KalmanFilter _KF;         // instantiate Kalman Filter
-        int _nStates = 18;            // the number of states
-        int _nMeasurements = 6;       // the number of measured states
-        int _nInputs = 0;             // the number of action control
-        double _dt = 0.125;           // time between measurements (1/FPS)
+        //// Create a Kalman filter to filter bad tracking results
+        //// https://docs.opencv.org/master/dc/d2c/tutorial_real_time_pose.html
+        //void initKalmanFilter(cv::KalmanFilter& KF, int nStates, int nMeasurements, int nInputs, double dt);
+        //void fillMeasurements(cv::Mat& measurements, const cv::Mat& translation_measured, const cv::Mat& rotation_measured);
+        //void updateKalmanFilter(cv::KalmanFilter& KF, cv::Mat& measurement, cv::Mat& translation_estimated, cv::Mat& rotation_estimated);
+        //cv::KalmanFilter _KF;         // instantiate Kalman Filter
+        //int _nStates = 18;            // the number of states
+        //int _nMeasurements = 6;       // the number of measured states
+        //int _nInputs = 0;             // the number of action control
+        //double _dt = 0.125;           // time between measurements (1/FPS)
 
         MediaFrameSourceGroupType _mediaFrameSourceGroupType;
         SpatialPerception^ _spatialPerception;
