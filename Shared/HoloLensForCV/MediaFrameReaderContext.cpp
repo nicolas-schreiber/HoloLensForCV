@@ -13,6 +13,67 @@
 
 namespace HoloLensForCV
 {
+    /// <summary>
+    /// Struct to contain camera calibration parameters 
+    /// (intrinsics and extrinsics) for the HoloLens 2
+    /// https://github.com/doughtmw/HoloLensCamCalib/tree/f4762cc37f148626b5a3ecdb585f420780725314
+    /// </summary>
+    struct CameraCalibrationParameters
+    {
+        // HL2: check to see if the camera intrinsics exist - they don't...
+        // Set manually for testing
+        // https://github.com/doughtmw/HoloLensCamCalib/blob/master/Examples/HL2/896x504/data.json
+        /*{"camera_matrix": [[687.7084133264314, 0.0, 435.87585657815976], [0.0, 688.8967461985196, 242.48218786961218], [0.0, 0.0, 1.0]],
+        "dist_coeff" : [[0.007576387773579617, -0.008347022259459137, 0.004030833288551814, -0.0005115698316792066, 0.0]],
+        "height" : 504, "width" : 896}*/
+
+        //Windows::Foundation::Numerics::float2 focalLength(687.7084133264314f, 688.8967461985196f); // (0,0) & (1,1)
+        //Windows::Foundation::Numerics::float2 principalPoint(435.87585657815976f, 242.48218786961218f); // (0,2) & (2,2)
+        //Windows::Foundation::Numerics::float3 radialDistortion(0.007576387773579617f, -0.008347022259459137f, 0.0f); // (0,0) & (0,1) & (0,4)
+        //Windows::Foundation::Numerics::float2 tangentialDistortion(0.004030833288551814f, -0.0005115698316792066f); // (0,2) & (0,3)
+        //uint imageWidth(896);
+        //uint imageHeight(504);
+
+        Windows::Foundation::Numerics::float2 focalLength;
+        Windows::Foundation::Numerics::float2 principalPoint;
+        Windows::Foundation::Numerics::float3 radialDistortion;
+        Windows::Foundation::Numerics::float2 tangentialDistortion;
+        int imageWidth;
+        int imageHeight;
+
+        // Create the camera intrinsics matrix from manual calculations
+        //auto manualCameraIntrinsics = ref new Windows::Media::Devices::Core::CameraIntrinsics(focalLength, principalPoint, radialDistortion, tangentialDistortion, imageWidth, imageHeight);
+
+        //// Cache to the current sensor frame
+        //sensorFrame->CoreCameraIntrinsics = manualCameraIntrinsics;
+    }CameraCalibrationParameters;
+
+    /// <summary>
+    /// Set the camera parameters of cached CameraCalibrationParameters struct
+    /// and use for improving tracking performance.
+    /// </summary>
+    /// <param name="focalLength"></param>
+    /// <param name="principalPoint"></param>
+    /// <param name="radialDistortion"></param>
+    /// <param name="tangentialDistortion"></param>
+    /// <param name="imageWidth"></param>
+    /// <param name="imageHeight"></param>
+    void CameraIntrinsicsAndExtrinsics::SetCameraParameters(
+        Windows::Foundation::Numerics::float2 focalLength,
+        Windows::Foundation::Numerics::float2 principalPoint,
+        Windows::Foundation::Numerics::float3 radialDistortion,
+        Windows::Foundation::Numerics::float2 tangentialDistortion,
+        int imageWidth,
+        int imageHeight)
+    {
+        CameraCalibrationParameters.focalLength = focalLength;
+        CameraCalibrationParameters.principalPoint = principalPoint;
+        CameraCalibrationParameters.radialDistortion = radialDistortion;
+        CameraCalibrationParameters.tangentialDistortion = tangentialDistortion;
+        CameraCalibrationParameters.imageWidth = imageWidth;
+        CameraCalibrationParameters.imageHeight = imageHeight;
+    }
+
     MediaFrameReaderContext::MediaFrameReaderContext(
         _In_ SensorType sensorType,
         _In_ SpatialPerception^ spatialPerception,
@@ -272,28 +333,18 @@ namespace HoloLensForCV
                     cameraViewTransformAsPlatformArray->Data);
         }
 
-        // HL2: TODO, make this more intuitive to control from Unity
         else if (_deviceType == DeviceType::HL2)
         {
-            // HL2: check to see if the camera intrinsics exist - they don't...
-            // Set manually for testing
-            // https://github.com/doughtmw/HoloLensCamCalib/blob/master/Examples/HL2/896x504/data.json
-            /*{"camera_matrix": [[687.7084133264314, 0.0, 435.87585657815976], [0.0, 688.8967461985196, 242.48218786961218], [0.0, 0.0, 1.0]], 
-                
-            "dist_coeff" : [[0.007576387773579617, -0.008347022259459137, 0.004030833288551814, -0.0005115698316792066, 0.0]], 
-                
-            "height" : 504, "width" : 896}*/
-
-            Windows::Foundation::Numerics::float2 focalLength(687.7084133264314f, 688.8967461985196f); // (0,0) & (1,1)
-            Windows::Foundation::Numerics::float2 principalPoint(435.87585657815976f, 242.48218786961218f); // (0,2) & (2,2)
-            Windows::Foundation::Numerics::float3 radialDistortion(0.007576387773579617f, -0.008347022259459137f, 0.0f); // (0,0) & (0,1) & (0,4)
-            Windows::Foundation::Numerics::float2 tangentialDistortion(0.004030833288551814f, -0.0005115698316792066f); // (0,2) & (0,3)
-            uint imageWidth(896);
-            uint imageHeight(504);
-
             // Create the camera intrinsics matrix from manual calculations
-            auto manualCameraIntrinsics = ref new Windows::Media::Devices::Core::CameraIntrinsics(focalLength, principalPoint, radialDistortion, tangentialDistortion, imageWidth, imageHeight);
-            
+            auto manualCameraIntrinsics =
+                ref new Windows::Media::Devices::Core::CameraIntrinsics(
+                    CameraCalibrationParameters.focalLength,
+                    CameraCalibrationParameters.principalPoint,
+                    CameraCalibrationParameters.radialDistortion,
+                    CameraCalibrationParameters.tangentialDistortion,
+                    (uint)CameraCalibrationParameters.imageWidth,
+                    (uint)CameraCalibrationParameters.imageHeight);
+
             // Cache to the current sensor frame
             sensorFrame->CoreCameraIntrinsics = manualCameraIntrinsics;
         }
