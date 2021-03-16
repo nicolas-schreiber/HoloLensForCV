@@ -48,4 +48,16 @@ namespace HoloLensForCV
         std::mutex _latestSensorFrameMutex;
         SensorFrame^ _latestSensorFrame;
     };
+
+    public ref class CameraIntrinsicsAndExtrinsics sealed
+    {
+    public:
+        void SetCameraParameters(
+            Windows::Foundation::Numerics::float2 focalLength,
+            Windows::Foundation::Numerics::float2 principalPoint,
+            Windows::Foundation::Numerics::float3 radialDistortion,
+            Windows::Foundation::Numerics::float2 tangentialDistortion,
+            int imageWidth,
+            int imageHeight);
+    };
 }
