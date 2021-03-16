@@ -1,5 +1,7 @@
 #pragma once
 #include "DetectedArUcoMarker.h"
+#include <opencv2/aruco.hpp>
+#include <opencv2/core.hpp>
 
 namespace HoloLensForCV
 {

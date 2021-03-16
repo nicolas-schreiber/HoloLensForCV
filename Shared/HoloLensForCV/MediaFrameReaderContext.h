@@ -10,6 +10,8 @@
 //*********************************************************
 
 #pragma once
+#include "DeviceType.h"
+
 
 namespace HoloLensForCV
 {
@@ -23,6 +25,7 @@ namespace HoloLensForCV
         MediaFrameReaderContext(
             _In_ SensorType sensorType,
             _In_ SpatialPerception^ spatialPerception,
+            _In_ DeviceType deviceType,
             _In_opt_ ISensorFrameSink^ sensorFrameSink);
 
         SensorFrame^ GetLatestSensorFrame();
@@ -38,10 +41,23 @@ namespace HoloLensForCV
         SensorType _sensorType;
         SpatialPerception^ _spatialPerception;
         ISensorFrameSink^ _sensorFrameSink;
+        DeviceType _deviceType;
 
         Io::TimeConverter _timeConverter;
 
         std::mutex _latestSensorFrameMutex;
         SensorFrame^ _latestSensorFrame;
+    };
+
+    public ref class CameraIntrinsicsAndExtrinsics sealed
+    {
+    public:
+        void SetCameraParameters(
+            Windows::Foundation::Numerics::float2 focalLength,
+            Windows::Foundation::Numerics::float2 principalPoint,
+            Windows::Foundation::Numerics::float3 radialDistortion,
+            Windows::Foundation::Numerics::float2 tangentialDistortion,
+            int imageWidth,
+            int imageHeight);
     };
 }
